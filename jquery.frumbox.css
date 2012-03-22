@@ -1,0 +1,27 @@
+#frumbox-overlay { position: fixed; top: 0; left: 0; }
+#frumbox-wrapper { position: fixed; top: 100: left: 100; }
+#frumbox-inner {
+	position: fixed;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #eee;
+	padding: 10px;
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,.5);
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,.5);
+	box-shadow: 0 0 10px rgba(0,0,0,.5);
+	background-color: #fff;
+	z-index: 555;
+}
+#frumbox-close {
+	text-indent: -9999px;
+	position: fixed;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	background: transparent url('close.png') no-repeat 0 0;
+	z-index: 556;
+	display: block;
+	width: 30px;
+	height: 30px;
+}

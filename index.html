@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>frumbox quick example</title>
+  <link rel="stylesheet" href="jquery.frumbox.css">
+  <style>
+	#greybox { margin: 25px;width: 700px;height: 350px;border: 1px solid #999;background-color: #eee; }
+	.toolbar ul { float:left;padding:padding:0;margin:0; }
+	.toolbar ul li { float:left;padding:0;list-style-type:none;margin:0 1px 0 0; }
+	.toolbar a { border:1px solid #999; background-color:#fff;padding:.3em; }
+	.toolbar { background-color:#eee; border: 1px solid #999; font-size: 0.9em;padding: 1em; }
+  </style>
+
+  <script src="jquery-1.7.1.min.js"></script>
+  <script src="jquery.easing.js"></script>
+  <script src="jquery.frumbox.js"></script>
+
+</head>
+
+<body>
+	
+<div id="page">
+    <h1>frumbox</h1>
+    <p>an animating, iframe ony lightbox, written by tim st.clair - http://frumbert.org/ - licence: public domain</p>
+    <div id="greybox">
+    	<p>Will open over me.</p>
+    	<p>Settable options</p>
+    	<ul>
+    		<li>Position on screen and size</li>
+    		<li>Overlay color, opacity and speed to display</li>
+    		<li>Whether pressing escape key or clicking on the background closes</li>
+    		<li>Whether close button appears</li>
+    		<li>a future version will support opening from within an iframe (partially works now)</li>
+    		
+    	</ul>
+    </div>
+
+    <p>Here are some test triggers:</p>
+    <div class="toolbar">
+	<ul class="type1">
+	    <li>known size:</li>
+	    <li><a href="popup.html">popup.html</a></li>
+	</ul>
+	<ul class="type2">
+		<li>Open over grey box:</li>
+	    <li><a href="http://theonion.com/">the onion</a></li>
+	    <li><a href="popup.html">popup.html</a></li>
+	    <li><a href="http://b3ta.com/">b3ta</a></li>
+	</ul>
+	<ul>
+		<li>Options:</li>
+		<li><a href="popup.html" id="cstm1">Default</a></li>
+		<li><a href="popup.html" id="cstm2">Timed (10sec)</a></li>
+	</ul>
+	<br clear="all" />
+	</div>
+</div>
+
+  <script>
+  	$(document).ready(function (){
+
+  		// calling on a single item
+		var l1 = $(".type1 a").frumbox({
+		    overlay : {
+		        colour: "#ffcc33"
+		    },
+		    size : {
+		        top: 50,
+		        left: 30,
+		        width: 500,
+		        height: 300
+		    }
+		}).on("click", function (event) {
+			event.preventDefault();
+			l1.frumbox("open");
+		});
+		
+		// various options
+		var c1 = $("#cstm1").frumbox().on("click", function (event) {event.preventDefault(); c1.frumbox("open");});
+		var c2 = $("#cstm2").frumbox({
+			closeButton: false,
+			clickCloses: false,
+			escapeCloses: false
+		}).on("click", function (event) {
+			event.preventDefault();
+			c2.frumbox("open");
+			setTimeout(function(){
+				c2.frumbox("close");
+			},10000);
+		});
+		
+		// calling on a group of items, must bind to each item
+		$(".type2 a").each(function (index,el) {
+			var me = $(el).frumbox({
+			    overlay : {
+			        colour: "#000000",
+			        speed: 678
+			    },
+			    size : {
+			        top: $("#greybox").offset().top,
+			        left: $("#greybox").offset().left,
+			        width: $("#greybox").width(),
+			        height: $("#greybox").height()
+			    }
+			}).on("click", function (event) {
+				event.preventDefault();
+				me.frumbox("open");
+			});
+	  	});
+	 });
+  </script>
+
+
+</body>
+</html>
