@@ -9,6 +9,10 @@ Demo:
 
   http://frumbert.org/frumbox/
 
+Documentation:
+
+  https://github.com/frumbert/frumbox/wiki/Frumbox-Options
+
 Features:
 
   - Will open an iframe based on the href attribute of the opening object
