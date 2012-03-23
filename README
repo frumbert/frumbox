@@ -1,11 +1,9 @@
-Frumbox - yet another jquery lightbox plugin.
----------------------------------------------
+Frumbox - yet another jquery lightbox plugin - except for IFRAMES.
+------------------------------------------------------------------
 
 The purpose of this plugin is to to proved an animated opening, easy to use lightbox designed with iframes in mind - both popping up from within an iframe, and to display iframes in the popup.
-
-It does not work with images, ajax-fed data, do slideshows, have fancy opening effects, or anything like that. If you want that sort of functionality then you should look at http://floatboxjs.com/ or http://fancyapps.com/fancybox/. It does not offer a great deal of events, or options.
-
-It does work with iframes. It opens from within an iframe in the parent (or self), and will display an iframe. It is designed to work on IE7+, Firefox, Chrome/Safari and iOS 5+ (though it might also work on iOS 4).
+It does NOT do images, ajax-fed data, slideshows, next/back, title overlays, have fancy opening effects, or anything like that. If you want that sort of functionality then you should look at http://floatboxjs.com/ or http://fancyapps.com/fancybox/.
+It DOES work with iframes. It opens from within an iframe in the parent (or self), and will display an iframe. It is designed to work on IE7+, Firefox, Chrome/Safari and iOS 5+ (though it might also work on iOS 4).
 
 Demo:
 
@@ -23,6 +21,17 @@ Features:
   - Defaults to centered on screen
   - Able to specify the top, left, width and height of the final position (e.g. it doesn't have to be centered)
   - Is able to be triggered in the PARENT frame (e.g. useful from within iframes in the same domain)
+
+Features:
+
+  - Will open an iframe based on the href of the opening object
+  - Optionally can specify a href to open if triggering directly
+  - Has onAfterOpen and onAfterClose event hooks
+  - Can specify whether it closes on pressing the Escape key, clicking on the overlay background, or whether the close button is visible
+  - Uses a CSS3 based shadow effect, and detects is CSS3PIE (window.PIE) javascript is available to call after opening to support box shadows, rounded edges etc in IE6-9
+  - Animates from the opening element to the final position
+  - Defaults to centered on screen
+  - Able to specify the top, left, width and height of the final position (e.g. it doesn't have to be centered)
 
 Licence:
 
