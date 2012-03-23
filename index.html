@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
 
-  <title>frumbox quick example</title>
+  <title>frumbox quick examples</title>
   <link rel="stylesheet" href="jquery.frumbox.css">
   <style>
+  	/* demo styles, not required for functionality */
 	#greybox { margin: 25px;width: 700px;height: 350px;border: 1px solid #999;background-color: #eee; }
-	.toolbar ul { float:left;padding:padding:0;margin:0; }
+	.toolbar ul { float:left;padding:0;margin:0 1em 0 0; }
 	.toolbar ul li { float:left;padding:0;list-style-type:none;margin:0 1px 0 0; }
 	.toolbar a { border:1px solid #999; background-color:#fff;padding:.3em; }
 	.toolbar { background-color:#eee; border: 1px solid #999; font-size: 0.9em;padding: 1em; }
   </style>
 
-  <script src="jquery-1.7.1.min.js"></script>
-  <script src="jquery.easing.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>
   <script src="jquery.frumbox.js"></script>
 
 </head>
@@ -23,31 +23,31 @@
 	
 <div id="page">
     <h1>frumbox</h1>
-    <p>an animating, iframe ony lightbox, written by tim st.clair - http://frumbert.org/ - licence: public domain</p>
+    <p>an animating, iframe ony (and iframe-friendly) lightbox, written by tim st.clair - http://frumbert.org/frumbox/ - licence: the unlicense</p>
     <div id="greybox">
     	<p>Will open over me.</p>
     	<p>Settable options</p>
     	<ul>
-    		<li>Position on screen and size</li>
-    		<li>Overlay color, opacity and speed to display</li>
-    		<li>Whether pressing escape key or clicking on the background closes</li>
-    		<li>Whether close button appears</li>
-    		<li>a future version will support opening from within an iframe (partially works now)</li>
-    		
+    		<li>Position on screen and size (or centered if not specified)</li>
+    		<li>Overlay color, opacity and speed to display (or white 50% opaque if not specified)</li>
+    		<li>Whether pressing escape key or clicking on the background closes (yes by default)</li>
+    		<li>Whether close button appears (yes by default)</li>
+    		<li>iOS 5 support for correctly scrolling the iframe content in the popup</li>
+    		<li>Open in parent frame instead - <em>trigger overlay from within an iframe!</em> (assumes same domain)</li>
     	</ul>
     </div>
 
-    <p>Here are some test triggers:</p>
+    <p>Here are some test triggers for you to play with:</p>
     <div class="toolbar">
 	<ul class="type1">
-	    <li>known size:</li>
+	    <li>Open custom size:</li>
 	    <li><a href="popup.html">popup.html</a></li>
 	</ul>
 	<ul class="type2">
-		<li>Open over grey box:</li>
+		<li>Open (slowly) over central box:</li>
 	    <li><a href="http://theonion.com/">the onion</a></li>
 	    <li><a href="popup.html">popup.html</a></li>
-	    <li><a href="http://b3ta.com/">b3ta</a></li>
+	    <li><a href="http://b3ta.com/">b3ta (possibly nsfw)</a></li>
 	</ul>
 	<ul>
 		<li>Options:</li>
@@ -55,21 +55,23 @@
 		<li><a href="popup.html" id="cstm2">Timed (10sec)</a></li>
 	</ul>
 	<br clear="all" />
+    <p class="clearfix">Trigger from within an iframe:</p>
+    <iframe width="200" height="100" src="iframe.html"></iframe>
 	</div>
 </div>
 
   <script>
   	$(document).ready(function (){
 
-  		// calling on a single item
+  		// open at a known size and colour
 		var l1 = $(".type1 a").frumbox({
 		    overlay : {
 		        colour: "#ffcc33"
 		    },
 		    size : {
 		        top: 50,
-		        left: 30,
-		        width: 500,
+		        left: ($(window).width()/2),
+		        width: ($(window).width()/3),
 		        height: 300
 		    }
 		}).on("click", function (event) {
@@ -77,8 +79,10 @@
 			l1.frumbox("open");
 		});
 		
-		// various options
+		// open with defaults
 		var c1 = $("#cstm1").frumbox().on("click", function (event) {event.preventDefault(); c1.frumbox("open");});
+
+		// open without user close ability, then close after 10 seconds
 		var c2 = $("#cstm2").frumbox({
 			closeButton: false,
 			clickCloses: false,

@@ -1,33 +1,55 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Testing iframe</title>
+	<meta charset="utf-8">
+	<title>Testing iframe</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>
+	<script src="jquery.frumbox.js"></script>
 </head>
 
 <body>
-	
-	<input type="button" id="link" />	
+	<p>scroll down to see more</p>
+	<input type="button" id="link" value="Press me" />	
+	<p>scroll some more</p>
+	<p align="right"><input type="button" id="link2" value="or me!" /></p>
+	<input type="button" id="link3" value="open in this frame" /></p>
 
-	<script src="jquery-1.7.1.min.js"></script>
-	<script src="jquery.easing.js"></script>
-	<script src="jquery.frumbox.js"></script>
 	<script>
 	$(document).ready(function() {
-		$("#link").val("open in parent");
+		
+		// demo 1 - open a known href with the default options
 		var c1 = $("#link").frumbox({
 			openInParent: true,
-			href: "popup.html",
-            size: {                    // the size to open at
-                top: $(window.parent).scrollTop() + ($(window.parent).height()/4),
-                left: $(window.parent).scrollLeft() + ($(window.parent).width()/4),
-                width: $(window.parent).width()/2,
-                height: $(window.parent).height()/2
-            }
+			href: "popup.html"
 		}).on("click", function (event) {
 			event.preventDefault();
 			c1.frumbox("open");
 		});
+
+		// demo 2 - open an external link at a particular spot on screen with custom overlay colour
+		var c2 = $("#link2").frumbox({
+			openInParent: true,
+			href: "http://b3ta.com/",
+			overlay : {
+				colour: "#B0FF8E",
+				opacity: 0.8
+			}
+		}).on("click", function (event) {
+			event.preventDefault();
+			c2.frumbox("setSize", {
+				top: 135, left: 246,
+				width: 430, height: 430
+			}).frumbox("open");
+		});
+
+		// demo 3 - show what happens if you don't specify 'open in parent'
+		var c3 = $("#link3").frumbox({
+			href: "popup.html"
+		}).on("click", function (event) {
+			event.preventDefault();
+			c3.frumbox("open");
+		});
+
 	});
 	</script>
 	
