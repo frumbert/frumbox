@@ -13,69 +13,20 @@
     // ***************************
     // ***** Private Members *****
     var _pluginName = "frumbox",
-        _version       = "1.1",
-        _W = $(window);
-        _D = $(document);
+        _version       = "1.2",
+		_W = $(window),
+		_touch = (navigator.userAgent.match(/|iPhone|iPad|iPod|Android/i) != null);
 
     var _createDOM = function (data) {
-        if (data.settings.openInParent) {
-        	_D = $(window.parent.document);
-        	if ($("link[href$='jquery.frumbox.css']", _D).length==0) {
-		    	// need to attach the stylesheet reference to parent page (if not already present); which lives in the same folder as jquery.frumbox.js
-		    	var loc = document.location.pathname; // in THIS frame
-		    	$("script").each(function(index,el) {
-		    		var src = $(el).attr("src");
-		    		if (src.indexOf("jquery.frumbox.js")!=-1) {
-		    			loc = src.replace("jquery.frumbox.js",""); // remaining url is path we need
-		    			return false; // break each
-		    		}
-		    	});
-				var link = $('<link />', {
-					href: loc + "jquery.frumbox.css",
-					media: 'screen',
-					rel: 'stylesheet',
-					type: 'text/css',
-					'id' : 'frumbox_css'
-				}).appendTo($('head', _D));
-				if ($.browser.msie) { $('#frumbox_css',_D).clone().appendTo($('head',_D)); } // Some IE's needs to clone in order to apply styles
-			}
-
-        	// create a proxy span to animate from
-        	// TODO: use window messages to determine source object instead of this hack; see http://stackoverflow.com/a/6051453/1238884
-        	var iframeSrc = (data.settings.iframeId==null) ? $("iframe:first", _D) : $(data.settings.iframeId, _D);
-        	
-	       	data.proxy = $("<span></span>").css({
-				position: "fixed",
-                top: data.target.offset().top + iframeSrc.offset().top - _W.scrollTop(),
-                left: data.target.offset().left + iframeSrc.offset().left - _W.scrollLeft(),
-                width: data.target.outerWidth(true),
-                height: data.target.outerHeight(false),
-                display: "block"
-			})
-			.appendTo($("body", _D));
-			data.target = data.proxy; // data.target is now a dummy element positioned "above" the clicked control, but in the parent frame
-			_W = $(parent.window); // shim window so _W is now the parent doc for further calculations
-			if (!data.settings.customSize) { // RECALCULATE default size based on new _W
-				$.extend(true, data.settings.size,  {
-				    top: _W.scrollTop() + (_W.height()/4),
-				    left: _W.scrollLeft() + (_W.width()/4),
-				    width: _W.width()/2,
-				    height: _W.height()/2
-				});
-			}
-
-		}
-        $("body", _D).append(
+        var body = (data.settings.openInParent) ? $("body",parent.document) : $("body");
+        $(body).append(
             data.overlay = $('<div id="frumbox-overlay"></div>'),
             data.wrapper = $('<div id="frumbox-wrapper"></div>')
         );
         data.inner = $('<div id="frumbox-inner"></div>').appendTo(data.wrapper);
-        if (navigator.userAgent.match(/iPad/i) != null) data.inner.attr("style", "-webkit-overflow-scrolling:touch;overflow:auto;"); // iframe on iPad needs touch scrolling hack
         if (data.settings.closeButton) {
             data.closer = $('<a id="frumbox-close"></a>').appendTo(data.wrapper);
         };
-        
-        
     };
 
     // **************************
@@ -89,31 +40,30 @@
                 
                 if (!data) { // If the plugin hasn't been initialized yet
                     var settings = {
-                        href: '',               // the url to display (normally $this.href)
-                        size: {                 // the size to open at (calculated before open @ centered 1/4 size of window, no resize support at this time)
-                            top: _W.scrollTop() + (_W.height()/4),
-                            left: _W.scrollLeft() + (_W.width()/4),
-                            width: _W.width()/2,
-                            height: _W.height()/2
+                        href: null,                // the url to display (normally $this.href),
+                        content: null,					// if href is null, you can specify html to display instead
+                        size: {                    // the size to open at (calculated before open @ centered 2/3 size of window, no resize support at this time)
+                            top: _W.scrollTop() + (_W.height()/6), 
+                            left: _W.scrollLeft() + (_W.width()/6), // 1/6th of the width; 
+                            width: (_W.width()/3) * 2 + 10,	// 2/3 width + ~ half width of scrollbar area
+                            height: (_W.height()/3) * 2
                         },
                         openInParent: false,    // for use in iframes; open the overlay in the parent frame (assumes permission)
-                        iframeId: null,			// id of iframe that contains this caller (if not specified, assumes iframe[0])
-                        closeButton: true,      // is there a close button?
-                        escapeCloses: true,     // press escape to close?
-                        clickCloses: true,      // click overlay to close?
-                        overlay : {             // overlay appearance
-                            opacity: 0.5,
+                        closeButton: true,        // is there a close button?
+                        escapeCloses: true,        // press escape to close?
+                        clickCloses: true,        // click overlay to close?
+                        overlay : {                // overlay appearance
+                            opacity: 0.8,
                             colour: "#ffffff",
                             speed: 250
                         },
-                        onAfterClose: $.noop,   // function to run after close is finished
-                        onAfterOpen: $.noop     // function to run after it is displayed
+                        onAfterClose: $.noop,    // function to run after close is finished
+                        onAfterOpen: $.noop        // function to run after it is displayed
                     }
                     if (options) { $.extend(true, settings, options); }
 
                     $this.data(_pluginName, {
                         target : $this,
-                        orig: $this,			// we overwrite target when openInParent:true; need to reset it to $this on close to allow re-opening
                         settings: settings,
                         isOpen: false,
                         iframe: null,
@@ -121,10 +71,9 @@
                         overlay: null,
                         wrapper: null,
                         inner: null,
-                        closer: null,
-                        proxy: null,
-                        customSize: false
+                        closer: null
                     });
+                    
                 }
             });
         },
@@ -132,7 +81,7 @@
             return this.each(function(index){
                 var $this = $(this);
                 var data = $this.data(_pluginName);
-                if(!data.isOpen) {
+                if (!data.isOpen) {
                     _createDOM(data);
 
                     // draw the overlay at opacity:0 so that it takes up the whole screen
@@ -164,8 +113,17 @@
                     // draw the iframe and set its href, but don't display it yet -animating the size of the iframe with a loading body is a bad idea
                     var href = data.settings.href || data.target.attr('href') || null;
                     if ((/^(?:javascript)/i).test(href) || href == '#') { href = null; }
-                    if (href == null) href = "about:blank"; // maybe you want to load something later?
-                    data.iframe = $('<iframe src="' + href + '" id="frumbox-iframe" name="frumbox-frame' + new Date().getTime() + '" frameborder="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>').hide().appendTo(data.inner);
+                    if (href == null || data.settings.html != null) {
+                    	data.iframe = $("<div></div>").attr({"id":"frumbox-iframe"}).hide().appendTo(data.inner);
+                   		data.iframe.css({
+                   			"overflow": "hidden",
+                   			"overflow-y": "auto"
+                   		});
+                    	if (data.settings.content != null) data.iframe.append(data.settings.content);
+                    } else {
+	                    data.iframe = $('<iframe src="' + href + '" id="frumbox-iframe" name="frumbox-frame' + new Date().getTime() + '" frameborder="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>').hide().appendTo(data.inner);
+	                    if (_touch) data.iframe.css("-webkit-transform","translate3d(0,0,0)"); // force hardware accelleration
+	                }
 
                     // animation of inner starts at size and position (roughly) of object we bound to
                     data.inner.css({
@@ -203,17 +161,19 @@
                             .click(function () {
                                 methods.close.call($this);
                             });
-                           }
+                        }
                            
-                           // position and show the iframe
-                           data.iframe.css({
+                        // position and show the iframe
+                        data.iframe.css({
                             width: data.inner.width(),
                             height: data.inner.height()
                         }).show();
 
-						if (_W.PIE) { // CSS3PIE javascript object might be present
-							_W.PIE.attach(_D.getElementById('frumbox-inner'));
-					    }
+						// seems like you have to add this event after the iframe pane is made visible, and has its height/width set to their final values
+				        if (_touch) data.inner.css({
+				        	"-webkit-overflow-scrolling":"touch",
+				        	"overflow":"scroll"
+				        });
 
 	                    data.isOpen = true;
 	                    if (typeof data.settings.onAfterOpen !== 'undefined' && data.settings.onAfterOpen !== $.noop) data.settings.onAfterOpen.call($this, data);
@@ -228,46 +188,40 @@
                 var $this = $(this);
                 var data = $this.data(_pluginName);
                 if(data.isOpen) {
+                	// removing an iframe appears to take time in the DOM, so do it first
+                	data.iframe.remove();
 
                     // unbind what we can
                     if (data.settings.clickCloses) data.overlay.unbind("click");
                     if (data.settings.closeButton) data.closer.unbind("click").remove();
                     if (data.settings.escapeCloses) data.esc.unbind("keypress");
-                    data.iframe.remove();
         
                     // fade out background
                     data.overlay.animate({
                         opacity : 0
                     }
-                    , data.settings.overlay.speed
+                    , 100
                     ,function () {
-                        data.overlay.unbind("click").remove();
-                    });
+                        data.overlay.unbind("click").empty().remove();
 
-                    // animate close of inner div
-                    data.inner.animate({
-                        opacity: 0.1,
-                        top: data.target.offset().top - _W.scrollTop(),
-                        left: data.target.offset().left - _W.scrollLeft(),
-                        width: data.target.width(),
-                        height: data.target.height()
-                    }
-                    , data.settings.overlay.speed
-                    ,'frumboxOut'
-                    , function () {
-                        data.inner.remove();
-                        data.wrapper.remove();
-                        data.isOpen = false;
-                        
-                        if (data.settings.openInParent) {
-                        	data.proxy.remove();
-                        	_D = $(document);
-                        	_W = $(window);
-                        	data.target = data.orig;
-                        }
-                        
-                        if (typeof data.settings.onAfterClose !== 'undefined' && data.settings.onAfterClose !== $.noop) data.settings.onAfterClose.call($this, data);
-                        
+	                    data.inner.animate({
+	                        opacity: 0.1,
+	                        top: data.target.offset().top - _W.scrollTop(),
+	                        left: data.target.offset().left - _W.scrollLeft(),
+	                        width: data.target.width(),
+	                        height: data.target.height()
+	                    }
+	                    , data.settings.overlay.speed
+	                    ,'frumboxOut'
+	                    , function () {
+	                        data.inner.empty().remove();
+	                        data.wrapper.empty().remove();
+	                        data.isOpen = false;
+	                        
+	                        if (typeof data.settings.onAfterClose !== 'undefined' && data.settings.onAfterClose !== $.noop) data.settings.onAfterClose.call($this, data);
+	                        
+	                    });
+
                     });
                 }
             });
@@ -278,7 +232,6 @@
                 var $this = $(this);
                 var data = $this.data(_pluginName);
 				if (options) { $.extend(true, data.settings.size, options); }
-				data.settings.customSize = true;
         	});
         }
     };
