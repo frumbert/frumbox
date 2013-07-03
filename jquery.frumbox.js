@@ -15,7 +15,7 @@
     var _pluginName = "frumbox",
         _version       = "1.2",
 		_W = $(window),
-		_touch = (navigator.userAgent.match(/|iPhone|iPad|iPod|Android/i) != null);
+		_touch = (navigator.userAgent.match(/iPhone|iPad|iPod|Android/i) != null);
 
     var _createDOM = function (data) {
         var body = (data.settings.openInParent) ? $("body",parent.document) : $("body");
