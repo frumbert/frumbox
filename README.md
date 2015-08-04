@@ -1,13 +1,10 @@
-Frumbox - yet another jquery lightbox plugin - except for IFRAMES.
-------------------------------------------------------------------
+#Frumbox - animated lightbox for IFRAMES
 
-The purpose of this plugin is to to proved an animated opening, easy to use lightbox designed with iframes in mind - both popping up from within an iframe, and to display iframes in the popup.
-It does NOT do images, ajax-fed data, slideshows, next/back, title overlays, have fancy opening effects, or anything like that. If you want that sort of functionality then you should look at http://floatboxjs.com/ or http://fancyapps.com/fancybox/.
+The purpose of this plugin is to to provide an animated opening, easy to use lightbox designed with iframes in mind - both popping up from within an iframe, and to display iframes in the popup.
+
+It does NOT do images, ajax-fed data, slideshows, next/back, title overlays, have bouncy opening effects, or anything like that.
+
 It DOES work with iframes. It opens from within an iframe in the parent (or self), and will display an iframe. It is designed to work on IE7+, Firefox, Chrome/Safari and iOS 5+ (though it might also work on iOS 4).
-
-Demo:
-
-  http://frumbert.org/frumbox/
 
 Documentation:
 
